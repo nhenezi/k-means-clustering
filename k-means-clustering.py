@@ -6,8 +6,6 @@ import math
 import sys
 from argparse import ArgumentParser
 
-xmax = 9
-ymax = 9
 DEBUG = True
 
 def distance(a, b):
@@ -15,21 +13,20 @@ def distance(a, b):
   return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 def printData(data, colors = False, centeroids=False):
+  removeEmpty = lambda a: filter(lambda x: x, a)
+  # finds highest x and y values in data
+  xmax = max(map(lambda x: max(map(lambda y: y[0], x) or 0), removeEmpty(data))) + 1
+  ymax = max(map(lambda x: max(map(lambda y: y[1], x) or 0), removeEmpty(data))) + 1
   '''Displays data in user friendly way'''
   out = [[" " for _ in xrange(ymax)] for _ in xrange(xmax)]
-  if colors:
-    for i, color in enumerate(data):
-      for d in color:
-        out[d[0]][d[1]] = '\033[1;' + str((31 + i)) + 'm·\033[1;m'
-    if centeroids:
-      for i, c in enumerate(centeroids):
-        out[int(c[0])][int(c[1])] = '\033[1;' + str(31 + i) + 'm×\033[1;m'
-  else:
-    for d in data:
-      out[d[0]][d[1]] = '·'
-    if centeroids:
-      for i, c in enumerate(centeroids):
-        out[int(c[0])][int(c[1])] = '\033[1;' + str(31 + i) + 'm×\033[1;m'
+  for i, color in enumerate(data):
+    # if colors == False paint everything white
+    startColor = (colors and 31) or 37
+    for d in color:
+      out[d[0]][d[1]] = '\033[1;' + str((startColor + i)) + 'm·\033[1;m'
+  if centeroids:
+    for i, c in enumerate(centeroids):
+      out[int(c[0])][int(c[1])] = '\033[1;' + str(31 + i) + 'm×\033[1;m'
 
   print ''
   print ''
@@ -56,14 +53,14 @@ def avg(tuples):
 
 
 def cluster(k, data, maxIter=30):
-  
+  print data
+  xmax = max(map(lambda x: x[0], data))
+  ymax = max(map(lambda x: x[1], data))
   centeroids = [(random.randint(0, xmax - 1),
                  random.randint(0, ymax - 1)) for _ in xrange(k)]
   
   print "Inital structure:"
-  printData(data, colors=False, centeroids=centeroids)
-
-
+  printData([data], colors=False, centeroids=centeroids)
   change = True
   cnt = 0
   while change and cnt < maxIter:
@@ -97,20 +94,39 @@ def cluster(k, data, maxIter=30):
 
 def parse():
   parser = ArgumentParser(description='K-means clustering algotihm visualization')
-  parser.add_argument('-k', '--means', help='Number of clusters', action='store', dest='k', type=int)
-  parser.add_argument('--max-iter', help='Maximum number of iterations. Default 30', dest='maxIter')
+  parser.add_argument('--in-file', help='Input file', dest='infile', metavar='f')
+  parser.add_argument('-pm', '--marker', default='1', metavar='p',
+                      help='How are data points marked in matrix. Default 1.')
+  parser.add_argument('-cs', '--separator', default=' ', metavar='$',
+                      help='How are columns separated. Default is one space " ".')
+  parser.add_argument('-k', '--means', dest='k', type=int, metavar='k',
+                      help='Number of clusters', action='store')
+  parser.add_argument('--max-iter', dest='maxIter', metavar='n', default='30',
+                      type=int,
+                      help='Maximum number of iterations. Default 30')
+  parser.add_argument('-v', '--verbose', help="Displays midsteps")
+
 
   options = parser.parse_args()
-  if options.k == None :
+  if options.k == None:
     print "Invalid usage, try -h for help"
     sys.exit()
+  if options.infile:
+    f = open(options.infile, 'r')
+    data = [map(int,line.split(options.separator)) for line in f ]
+    options.data = []
+    for i, row in enumerate(data):
+      for j, elem in enumerate(row):
+        if str(elem) == str(options.marker):
+          options.data.append((i,j))
+    options.xmax = i + 1
+    options.ymax = j + 1
 
   return options
 
 def run(options):
-  data = [(2,2), (1,2), (3,2), (4,1), (1,4), (6,6), (5,5), (4,4), (8,6), (6,8), (8,7)]
-  colors = cluster(options.k, data)
-  printData(colors, True)
+  colors = cluster(options.k, options.data, maxIter=options.maxIter)
+  printData(colors, colors=True)
 
 if __name__ == '__main__':
   run(parse())

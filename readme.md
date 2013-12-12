@@ -5,7 +5,7 @@ Visualization of k-means clustering algorithm.
 * `-k k, --clusters k`  number of clusters (required)
 * `--in-file f` input file (required)
 * `-pm p, --marker` How are data points marked in matrix. Default is 1
-* `-cs, --separator` How are columns separated. Default is one space
+* `-cs $, --separator $` How are columns separated. Default is one space
 * `--max-iter n` Maximum number of iterations
 * `-v, --verbose` Show midsteps
 

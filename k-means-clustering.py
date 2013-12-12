@@ -26,7 +26,7 @@ def printData(data, colors = False, centeroids=False):
       out[d[0]][d[1]] = '\033[1;' + str((startColor + i)) + 'm·\033[1;m'
   if centeroids:
     for i, c in enumerate(centeroids):
-      out[int(c[0])][int(c[1])] = '\033[1;' + str(31 + i) + 'm×\033[1;m'
+      out[int(round(c[0]))][int(round(c[1]))] = '\033[1;' + str(31 + i) + 'm×\033[1;m'
 
   print ''
   print ''

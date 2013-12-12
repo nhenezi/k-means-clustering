@@ -10,7 +10,7 @@ DEBUG = True
 
 def distance(a, b):
   '''Defines distance between two tuples'''
-  return abs(a[0] - b[0]) + abs(a[1] - b[1])
+  return math.sqrt(pow(a[0] - b[0], 2) + pow(a[1] - b[1], 2))
 
 def printData(data, colors = False, centeroids=False):
   removeEmpty = lambda a: filter(lambda x: x, a)

@@ -1,8 +1,10 @@
- #!/usr/bin/python
- # -*- coding: utf-8 -*-
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import random
 import math
+import sys
+from argparse import ArgumentParser
 
 xmax = 9
 ymax = 9
@@ -93,7 +95,22 @@ def cluster(k, data, maxIter=30):
     cnt = cnt + 1
   return colors
 
-if __name__ == '__main__':
+def parse():
+  parser = ArgumentParser(description='K-means clustering algotihm visualization')
+  parser.add_argument('-k', '--means', help='Number of clusters', action='store', dest='k', type=int)
+  parser.add_argument('--max-iter', help='Maximum number of iterations. Default 30', dest='maxIter')
+
+  options = parser.parse_args()
+  if options.k == None :
+    print "Invalid usage, try -h for help"
+    sys.exit()
+
+  return options
+
+def run(options):
   data = [(2,2), (1,2), (3,2), (4,1), (1,4), (6,6), (5,5), (4,4), (8,6), (6,8), (8,7)]
-  colors = cluster(2, data)
+  colors = cluster(options.k, data)
   printData(colors, True)
+
+if __name__ == '__main__':
+  run(parse())

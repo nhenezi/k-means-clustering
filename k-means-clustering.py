@@ -52,8 +52,8 @@ def avg(tuples):
   return (a, b)
 
 
-def cluster(k, data, maxIter=30):
-  print data
+def cluster(k, data, maxIter=30, options=None):
+  '''Splits data into k clusters'''
   xmax = max(map(lambda x: x[0], data))
   ymax = max(map(lambda x: x[1], data))
   centeroids = [(random.randint(0, xmax - 1),
@@ -86,25 +86,27 @@ def cluster(k, data, maxIter=30):
         changed = True
     if not changed:
       change = False
-    if DEBUG:
+    if options.verbose:
       printData(clusters, colors=True, centeroids=centeroids)
     centeroids = newPos
     cnt = cnt + 1
   return clusters
 
 def parse():
-  parser = ArgumentParser(description='K-means clustering algotihm visualization')
-  parser.add_argument('--in-file', help='Input file', dest='infile', metavar='f')
+  parser = ArgumentParser(description='K-means clustering algotihm visualization.')
+  parser.add_argument('-k', '--means', dest='k', type=int, metavar='k',
+                      help='Number of clusters', action='store', required=True)
+  parser.add_argument('--in-file', help='Input file', dest='infile', metavar='f',
+                      required=True)
   parser.add_argument('-pm', '--marker', default='1', metavar='p',
                       help='How are data points marked in matrix. Default 1.')
   parser.add_argument('-cs', '--separator', default=' ', metavar='$',
                       help='How are columns separated. Default is one space " ".')
-  parser.add_argument('-k', '--means', dest='k', type=int, metavar='k',
-                      help='Number of clusters', action='store')
   parser.add_argument('--max-iter', dest='maxIter', metavar='n', default='30',
                       type=int,
                       help='Maximum number of iterations. Default 30')
-  parser.add_argument('-v', '--verbose', help="Displays midsteps")
+  parser.add_argument('-v', '--verbose', help="Displays midsteps",
+                      action='store_true', dest='verbose')
 
 
   options = parser.parse_args()
@@ -125,7 +127,8 @@ def parse():
   return options
 
 def run(options):
-  clusters = cluster(options.k, options.data, maxIter=options.maxIter)
+  clusters = cluster(options.k, options.data, maxIter=options.maxIter,
+                     options=options)
   printData(clusters, colors=True)
 
 if __name__ == '__main__':

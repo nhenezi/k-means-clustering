@@ -6,18 +6,16 @@ import math
 import sys
 from argparse import ArgumentParser
 
-DEBUG = True
-
 def distance(a, b):
-  '''Defines distance between two tuples'''
+  '''Defines distance between two tuples (LP2 norm)'''
   return math.sqrt(pow(a[0] - b[0], 2) + pow(a[1] - b[1], 2))
 
 def printData(data, colors = False, centeroids=False):
+  '''Displays data in user friendly format (with colors!)'''
   removeEmpty = lambda a: filter(lambda x: x, a)
   # finds highest x and y values in data
   xmax = max(map(lambda x: max(map(lambda y: y[0], x) or 0), removeEmpty(data))) + 1
   ymax = max(map(lambda x: max(map(lambda y: y[1], x) or 0), removeEmpty(data))) + 1
-  '''Displays data in user friendly way'''
   out = [[" " for _ in xrange(ymax)] for _ in xrange(xmax)]
   for i, color in enumerate(data):
     # if colors == False paint everything white
@@ -78,14 +76,17 @@ def cluster(k, data, maxIter=30, options=None):
       clusters[color].append(data[i])
     newPos = map(avg, clusters)
     for i in xrange(len(centeroids)):
+      '''We keep centeroids that didn't change location'''
       if newPos[i] == False:
         newPos[i] = centeroids[i]
     for i in xrange(len(centeroids)):
+      '''We continue with iterations if at least one centeroid changed position'''
       changed = False
       if centeroids[i] != newPos[i]:
         changed = True
     if not changed:
       change = False
+
     if options.verbose:
       printData(clusters, colors=True, centeroids=centeroids)
     centeroids = newPos

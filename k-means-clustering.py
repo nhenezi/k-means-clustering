@@ -60,7 +60,7 @@ def cluster(k, data, maxIter=30):
                  random.randint(0, ymax - 1)) for _ in xrange(k)]
   
   print "Inital structure:"
-  printData([data], colors=False, centeroids=centeroids)
+  printData([data], centeroids=centeroids)
   change = True
   cnt = 0
   while change and cnt < maxIter:
@@ -113,7 +113,7 @@ def parse():
     sys.exit()
   if options.infile:
     f = open(options.infile, 'r')
-    data = [map(int,line.split(options.separator)) for line in f ]
+    data = [line.split(options.separator) for line in f ]
     options.data = []
     for i, row in enumerate(data):
       for j, elem in enumerate(row):

@@ -64,7 +64,7 @@ def cluster(k, data, maxIter=30):
   change = True
   cnt = 0
   while change and cnt < maxIter:
-    colors = [[] for i in xrange(k)]
+    clusters = [[] for i in xrange(k)]
     for i in xrange(len(data)):
       minDist = False
       color = False
@@ -75,8 +75,8 @@ def cluster(k, data, maxIter=30):
           minDist = dist
           color = j
 
-      colors[color].append(data[i])
-    newPos = map(avg, colors)
+      clusters[color].append(data[i])
+    newPos = map(avg, clusters)
     for i in xrange(len(centeroids)):
       if newPos[i] == False:
         newPos[i] = centeroids[i]
@@ -87,10 +87,10 @@ def cluster(k, data, maxIter=30):
     if not changed:
       change = False
     if DEBUG:
-      printData(colors, colors=True, centeroids=centeroids)
+      printData(clusters, colors=True, centeroids=centeroids)
     centeroids = newPos
     cnt = cnt + 1
-  return colors
+  return clusters
 
 def parse():
   parser = ArgumentParser(description='K-means clustering algotihm visualization')
@@ -125,8 +125,8 @@ def parse():
   return options
 
 def run(options):
-  colors = cluster(options.k, options.data, maxIter=options.maxIter)
-  printData(colors, colors=True)
+  clusters = cluster(options.k, options.data, maxIter=options.maxIter)
+  printData(clusters, colors=True)
 
 if __name__ == '__main__':
   run(parse())
